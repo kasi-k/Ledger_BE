@@ -1415,6 +1415,10 @@ app.get("/api/audit", async (req, res) => {
   res.json(entries);
 });
 
+app.get('/',(req,res)=>{
+  res.send('Server is running')
+})
+
 initStorage()
   .then(() => {
     app.listen(PORT, () => {
