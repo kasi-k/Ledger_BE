@@ -1,0 +1,27 @@
+# Render Blueprint for the backend API (this folder is the repo root).
+services:
+  - type: web
+    name: maarr-ledger-api
+    runtime: node
+    plan: free # upgrade to "starter" ($7/mo) to avoid cold-start sleep
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: MONGODB_DB
+        value: maarr_ledger
+      # Secrets — set these in the Render dashboard (sync:false = not in git):
+      - key: MONGODB_URI
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      - key: AUTH_PASS
+        sync: false
+      - key: EMP_PASS
+        sync: false
+      # Your Vercel frontend origin, e.g. https://maarr-ledger.vercel.app
+      - key: CORS_ORIGIN
+        sync: false

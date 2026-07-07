@@ -1,0 +1,16 @@
+# dependencies
+node_modules/
+
+# environment / secrets — never commit
+.env
+.env.local
+.env*.local
+
+# runtime data (persisted in MongoDB Atlas in production; local-only in dev)
+uploads/
+audit.log
+ledger.json
+
+# logs & OS cruft
+*.log
+.DS_Store

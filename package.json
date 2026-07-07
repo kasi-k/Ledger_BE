@@ -1,0 +1,22 @@
+{
+  "name": "expense-tracker-backend",
+  "version": "1.0.0",
+  "description": "Simple expense tracker backend",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "mongodb": "^7.4.0",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.35.3"
+  }
+}
