@@ -239,6 +239,21 @@ async function initStorage() {
   }
 }
 
+// Re-read the ledger from storage into the in-memory cache, discarding any
+// changes made directly in Atlas since startup. Waits for pending writes to
+// flush first so an in-flight upsert can't clobber the fresh read. Used by the
+// /api/refresh admin endpoint (e.g. after clearing the DB out of band).
+async function reloadCache() {
+  await writeChain.catch(() => {});
+  if (mongoColl) {
+    const doc = await mongoColl.findOne({ _id: "ledger" });
+    cache = doc && doc.data ? normalizeData(doc.data) : defaults();
+  } else {
+    cache = readFileData() || defaults();
+  }
+  return readData();
+}
+
 // --- Invoice file storage: GridFS in Atlas mode, local disk otherwise --------
 // Save bytes; returns a reference merged into the invoice record.
 async function saveInvoiceFile(buffer, meta) {
@@ -1085,6 +1100,22 @@ app.put("/api/settings/grace-day", (req, res) => {
   writeData(data);
   audit("set_grace_day", req.user, { from, to: value });
   res.json({ graceDay: value });
+});
+
+// Admin: re-read the ledger from storage into the in-memory cache. Use this
+// after clearing/editing the Atlas data out of band — the server caches the
+// whole ledger in memory at boot and never re-queries otherwise, so it would
+// keep serving (and re-uploading) the stale copy until a refresh or restart.
+app.post("/api/refresh", async (req, res) => {
+  if (requireAdmin(req, res)) return;
+  try {
+    const data = await reloadCache();
+    audit("refresh_cache", req.user, { entries: (data.entries || []).length });
+    res.json({ refreshed: true, entries: (data.entries || []).length });
+  } catch (err) {
+    console.error("Cache refresh failed:", err.message);
+    res.status(500).json({ error: "refresh failed" });
+  }
 });
 
 // Admin: unlock a locked month for corrections.
