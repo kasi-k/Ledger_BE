@@ -581,7 +581,7 @@ async function generateStatementPdf(statement, meta) {
     // Logo left, statement title + dates right-aligned to the right margin.
     page.drawImage(logo, { x: M, y: PH - M - logoH, width: logoW, height: logoH });
     const rx = PW - M;
-    const title = "Monthly Statement";
+    const title = "Monthly Expenses";
     const tw = bold.widthOfTextAtSize(title, 15);
     page.drawText(title, { x: rx - tw, y: PH - M - 13, size: 15, font: bold, color: ink });
     const dr = `${fmtDate(meta.from)}  to  ${fmtDate(meta.to)}`;
